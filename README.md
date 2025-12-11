@@ -78,9 +78,3 @@ Perfect for learning, internships, or academic submission.
 
 ---
 
-
-
-
-
-## 📁 Folder Structure
-
