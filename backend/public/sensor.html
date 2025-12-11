@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sensor Details</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<a class="back-btn" href="javascript:history.back()">⬅ Back</a>
+<h2 style="text-align:center;">Sensor Details</h2>
+
+<div class="card" id="info"></div>
+
+<!-- Temperature Chart -->
+<div class="card">
+  <h3>Temperature Trend (24 hrs)</h3>
+  <canvas id="tempChart" height="100"></canvas>
+</div>
+
+<!-- Vibration Chart -->
+<div class="card">
+  <h3>Vibration Trend (24 hrs)</h3>
+  <canvas id="vibChart" height="100"></canvas>
+</div>
+
+<!-- Sound Chart -->
+<div class="card">
+  <h3>Sound Trend (24 hrs)</h3>
+  <canvas id="soundChart" height="100"></canvas>
+</div>
+
+<script src="script.js"></script>
+<script>
+if (!getToken()) location.href = "/login.html";
+
+const motorId = new URLSearchParams(location.search).get("motor_id");
+
+async function load() {
+  const latest = await apiGet(`/sensors/${motorId}/latest`);
+  const history = await apiGet(`/sensors/${motorId}/history?hours=24`);
+
+  // Show latest sensor values
+  document.getElementById("info").innerHTML = `
+    <p><b>Temperature:</b> ${latest.temperature_celsius} °C</p>
+    <p><b>Vibration:</b> ${latest.vibration_mm_s} mm/s</p>
+    <p><b>Sound:</b> ${latest.sound_db} dB</p>
+    <p><b>Last Updated:</b> ${latest.timestamp}</p>
+  `;
+
+  const labels = history.map(h => h.timestamp);
+
+  // TEMPERATURE GRAPH
+  new Chart(document.getElementById("tempChart"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: "Temperature (°C)",
+        data: history.map(h => h.temperature_celsius),
+        borderColor: "red",
+        borderWidth: 2
+      }]
+    }
+  });
+
+  // VIBRATION GRAPH
+  new Chart(document.getElementById("vibChart"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: "Vibration (mm/s)",
+        data: history.map(h => h.vibration_mm_s),
+        borderColor: "blue",
+        borderWidth: 2
+      }]
+    }
+  });
+
+  // SOUND GRAPH
+  new Chart(document.getElementById("soundChart"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: "Sound (dB)",
+        data: history.map(h => h.sound_db),
+        borderColor: "green",
+        borderWidth: 2
+      }]
+    }
+  });
+}
+
+load();
+</script>
+
+</body>
+</html>

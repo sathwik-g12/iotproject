@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Motors</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<a class="back-btn" href="zones.html">⬅ Back</a>
+<h2 style="text-align:center;">Motors</h2>
+
+<div id="motors"></div>
+
+<script src="script.js"></script>
+<script>
+if (!getToken()) location.href = "/login.html";
+
+const zoneId = new URLSearchParams(location.search).get("zone_id");
+
+async function loadMotors() {
+  const motors = await apiGet("/motors?zone_id=" + zoneId);
+
+  document.getElementById("motors").innerHTML = motors.map(m => `
+    <div class="card" onclick="view(${m.id})">
+      <h3>${m.motor_name}</h3>
+      <p>Type: ${m.motor_type}</p>
+      <p>Status: ${m.status}</p>
+    </div>
+  `).join("");
+}
+
+function view(id) {
+  location.href = "/sensor.html?motor_id=" + id;
+}
+
+loadMotors();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Zones</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2 style="text-align:center;">Zones</h2>
+
+<div id="zones"></div>
+
+<script src="script.js"></script>
+<script>
+if (!getToken()) location.href = "/login.html";
+
+async function loadZones() {
+  const data = await apiGet("/zones");
+
+  const container = document.getElementById("zones");
+  container.innerHTML = data.map(z => `
+    <div class="card" onclick="go(${z.id})">
+      <h3>${z.zone_name}</h3>
+      <p>${z.location}</p>
+      <p>Motors: ${z.motors_count}</p>
+    </div>
+  `).join("");
+}
+
+function go(id) {
+  location.href = "/motors.html?zone_id=" + id;
+}
+
+loadZones();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Login</h2>
+
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+
+  <p id="error" style="color:red; margin-top:10px;"></p>
+</div>
+
+<script src="script.js"></script>
+<script>
+async function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const res = await apiPost("/auth/login", { username, password });
+
+  if (!res.token) {
+    document.getElementById("error").innerText = "Invalid username or password";
+    return;
+  }
+
+  setToken(res.token);
+  location.href = "/zones.html";
+}
+</script>
+
+</body>
+</html>
